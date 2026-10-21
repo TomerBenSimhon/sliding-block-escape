@@ -1,0 +1,19 @@
+{
+    "name": "SlidingBlock.Editor",
+    "rootNamespace": "SlidingBlock.Editor",
+    "references": [
+        "SlidingBlock.Core",
+        "SlidingBlock.Data"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

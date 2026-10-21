@@ -1,0 +1,22 @@
+{
+    "name": "SlidingBlock.Game",
+    "rootNamespace": "SlidingBlock.Game",
+    "references": [
+        "SlidingBlock.Core",
+        "SlidingBlock.Data",
+        "SlidingBlock.Services",
+        "VContainer",
+        "UniTask",
+        "LitMotion",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

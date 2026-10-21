@@ -1,0 +1,21 @@
+{
+    "name": "SlidingBlock.UI",
+    "rootNamespace": "SlidingBlock.UI",
+    "references": [
+        "SlidingBlock.Core",
+        "SlidingBlock.Services",
+        "VContainer",
+        "UniTask",
+        "LitMotion",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

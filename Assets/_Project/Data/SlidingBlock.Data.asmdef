@@ -1,0 +1,16 @@
+{
+    "name": "SlidingBlock.Data",
+    "rootNamespace": "SlidingBlock.Data",
+    "references": [
+        "SlidingBlock.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
