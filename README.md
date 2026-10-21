@@ -37,5 +37,6 @@ Assets/_Project/
 ## Getting started
 
 1. Install Unity 6000.6.2f1 with Android Build Support.
-2. Install [Git LFS](https://git-lfs.com) and run `git lfs install` once.
-3. Clone the repo and open the folder in Unity Hub.
+2. Install [Git LFS](https://git-lfs.com).
+3. Clone the repo and run `sh tools/git/setup.sh` from its root (Git Bash). This enables LFS and registers Unity Smart Merge for scenes and prefabs.
+4. Open the folder in Unity Hub.

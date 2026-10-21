@@ -1,12 +1,13 @@
 # Normalize line endings for text
 * text=auto
 
-# Unity YAML: let git merge as text, but don't diff-mangle line endings
+# Text files. Unity YAML files use the Smart Merge driver (set up by tools/git/setup.sh)
 *.cs        text diff=csharp
 *.asmdef    text
 *.asmref    text
 *.json      text
 *.md        text
+*.sh        text eol=lf
 *.shader    text
 *.hlsl      text
 *.uss       text
