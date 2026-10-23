@@ -19,7 +19,7 @@ namespace SlidingBlock.Core.Tests
             Assert.AreEqual(3, block.Length);
             Assert.AreEqual(Axis.Vertical, block.Axis);
             Assert.IsTrue(block.IsTarget);
-        }
+        }   
 
         [TestCase(0)]
         [TestCase(-1)]
