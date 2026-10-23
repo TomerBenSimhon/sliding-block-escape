@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+
+namespace SlidingBlock.Core
+{
+    public sealed class Board
+    {
+        public const int Empty = -1;
+
+        private readonly Block[] _blocks;
+        private readonly int[] _cells; // block id per cell, row by row from the bottom; Empty if free
+        private readonly int _targetId;
+
+        public int Width { get; }
+        public int Height { get; }
+        public IReadOnlyList<Block> Blocks => _blocks;
+        public Block Target => _blocks[_targetId];
+
+        public Board(int width, int height, Block[] blocks)
+        {
+            if (width < 1) throw new ArgumentOutOfRangeException(nameof(width), width, "Width must be at least 1");
+            if (height < 1) throw new ArgumentOutOfRangeException(nameof(height), height, "Height must be at least 1");
+            if (blocks == null) throw new ArgumentNullException(nameof(blocks));
+
+            Width = width;
+            Height = height;
+            _blocks = (Block[])blocks.Clone();
+            _cells = new int[width * height];
+            Array.Fill(_cells, Empty);
+            _targetId = Empty;
+
+            for (int i = 0; i < _blocks.Length; i++)
+            {
+                var block = _blocks[i];
+                if (block.Id != i)
+                    throw new ArgumentException($"Block at index {i} has id {block.Id}; ids must match their index");
+
+                for (int j = 0; j < block.Length; j++)
+                {
+                    var cell = block.CellAt(j);
+                    if (!IsInside(cell))
+                        throw new ArgumentException($"Block {block.Id} is outside the {width}x{height} board at {cell}");
+
+                    int index = IndexOf(cell);
+                    if (_cells[index] != Empty)
+                        throw new ArgumentException($"Block {block.Id} overlaps block {_cells[index]} at {cell}");
+
+                    _cells[index] = block.Id;
+                }
+
+                if (!block.IsTarget) continue;
+                if (_targetId != Empty)
+                    throw new ArgumentException($"Blocks {_targetId} and {block.Id} are both targets; a board needs exactly one");
+                _targetId = block.Id;
+            }
+
+            if (_targetId == Empty) throw new ArgumentException("A board needs exactly one target block, found none");
+        }
+
+        public bool IsInside(GridPos pos)
+        {
+            return pos.X >= 0 && pos.X < Width && pos.Y >= 0 && pos.Y < Height;
+        }
+
+        public int BlockAt(GridPos pos)
+        {
+            if (!IsInside(pos)) throw new ArgumentOutOfRangeException(nameof(pos), pos, "Position is outside the board");
+            return _cells[IndexOf(pos)];
+        }
+
+        public Block GetBlock(int id)
+        {
+            if (id < 0 || id >= _blocks.Length)
+                throw new ArgumentOutOfRangeException(nameof(id), id, $"Block id must be between 0 and {_blocks.Length - 1}");
+            return _blocks[id];
+        }
+
+        private int IndexOf(GridPos pos) => pos.Y * Width + pos.X;
+    }
+}
