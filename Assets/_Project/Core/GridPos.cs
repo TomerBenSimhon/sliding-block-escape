@@ -6,6 +6,8 @@ namespace SlidingBlock.Core
     {
         public int X { get; }
         public int Y { get; }
+        public static readonly GridPos Right = new GridPos(1, 0);
+        public static readonly GridPos Up    = new GridPos(0, 1);
 
         public GridPos(int x, int y)
         {
@@ -31,6 +33,9 @@ namespace SlidingBlock.Core
         public static bool operator ==(GridPos a, GridPos b) => a.Equals(b);
         public static bool operator !=(GridPos a, GridPos b) => !(a == b);
         public static GridPos operator +(GridPos a, GridPos b) => new GridPos(a.X + b.X, a.Y + b.Y);
+        public static GridPos operator -(GridPos a, GridPos b) => new GridPos(a.X - b.X, a.Y - b.Y);
+        public static GridPos operator *(GridPos a, int scalar) => new GridPos(a.X * scalar, a.Y * scalar);
+        public static GridPos operator *(int scalar, GridPos a) => a * scalar;
         public override string ToString() => $"({X}, {Y})";
     }
 }
