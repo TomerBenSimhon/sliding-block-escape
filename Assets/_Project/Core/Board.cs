@@ -75,6 +75,47 @@ namespace SlidingBlock.Core
             return _blocks[id];
         }
 
+        public bool CanMove(Move move)
+        {
+            var block = GetBlock(move.BlockId);
+            GridPos start = move.Distance > 0 ? block.CellAtFarEnd : block.Position;
+            GridPos stepDir = block.Direction * Math.Sign(move.Distance);
+            int steps = Math.Abs(move.Distance);
+
+            for (int k = 1; k <= steps; k++)
+            {
+                var cell = start + (stepDir * k);
+                if (!IsInside(cell)) return false;
+                if (BlockAt(cell) != Empty) return false;
+            }
+
+            return true;
+        }
+
+        public void ApplyMove(Move move)
+        {
+            if (!CanMove(move))
+                throw new InvalidOperationException($"Illegal move {move}: the path is blocked or leaves the board");
+
+            var block = GetBlock(move.BlockId);
+            FillCells(block, Empty);
+
+            var moved = block.WithPosition(block.Position + block.Direction * move.Distance);
+            _blocks[move.BlockId] = moved;
+            FillCells(moved, move.BlockId);
+        }
+
+        // Solved when the target's far end touches the edge in its direction (the exit).
+        public bool IsSolved => !IsInside(Target.CellAtFarEnd + Target.Direction);
+
         private int IndexOf(GridPos pos) => pos.Y * Width + pos.X;
+
+        private void FillCells(Block block, int value)
+        {
+            for (int i = 0; i < block.Length; i++)
+            {
+                _cells[IndexOf(block.CellAt(i))] = value;
+            }
+        }
     }
 }

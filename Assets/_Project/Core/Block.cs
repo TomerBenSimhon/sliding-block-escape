@@ -30,6 +30,9 @@ namespace SlidingBlock.Core
             if(index < 0 || index >= Length) throw new ArgumentOutOfRangeException(nameof(index), index, "Index is out of range");
             return Position + Direction * index;
         }
+
+        public GridPos CellAtFarEnd => CellAt(Length - 1);
+
         public Block WithPosition(GridPos newPosition)
         {
             return new Block(Id, newPosition, Length, Axis, IsTarget);
