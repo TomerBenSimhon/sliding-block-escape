@@ -6,31 +6,31 @@ namespace SlidingBlock.Game
     public sealed class BoardView : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _background;
-        [SerializeField] private Transform _blocksParent;
-        [SerializeField] private BlockView _blockPrefab;
+        [SerializeField] private Transform _blockViewsParent;
+        [SerializeField] private BlockView _blockViewPrefab;
         [SerializeField, Min(0f)] private float _margin = 0.2f;
 
-        private readonly List<BlockView> _blocks = new List<BlockView>();
+        private readonly List<BlockView> _blockViews = new List<BlockView>();
 
-        public void SetBoardSize(Vector2 worldSize)
+        public void SetSize(Vector2 boardWorldSize)
         {
-            _background.transform.localScale = new Vector3(worldSize.x + _margin * 2f, worldSize.y + _margin * 2f, 1f);
+            _background.transform.localScale = new Vector3(boardWorldSize.x + _margin * 2f, boardWorldSize.y + _margin * 2f, 1f);
         }
 
-        public BlockView CreateBlock()
+        public BlockView CreateBlockView()
         {
-            BlockView blockView = Instantiate(_blockPrefab, _blocksParent);
-            _blocks.Add(blockView);
+            BlockView blockView = Instantiate(_blockViewPrefab, _blockViewsParent);
+            _blockViews.Add(blockView);
             return blockView;
         }
 
         public void Clear()
         {
-            foreach (BlockView blockView in _blocks)
+            foreach (BlockView blockView in _blockViews)
             {
                 Destroy(blockView.gameObject);
             }
-            _blocks.Clear();
+            _blockViews.Clear();
         }
     }
 }

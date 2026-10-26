@@ -272,7 +272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 495294608}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -369,8 +369,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SlidingBlock.Game::SlidingBlock.Game.BoardView
   _background: {fileID: 495294610}
-  _blocksParent: {fileID: 1968724408}
-  _blockPrefab: {fileID: 813773684721396116, guid: 6c7c23a7b5238114a91d3d9a7abc4946, type: 3}
+  _blockViewsParent: {fileID: 1968724408}
+  _blockViewPrefab: {fileID: 813773684721396116, guid: 6c7c23a7b5238114a91d3d9a7abc4946, type: 3}
   _margin: 0.2
 --- !u!4 &1002499340
 Transform:
