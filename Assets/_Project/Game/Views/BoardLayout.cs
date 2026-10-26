@@ -10,6 +10,7 @@ namespace SlidingBlock.Game
         public int Height { get; }
         public float CellSize { get; }
         public Vector3 Origin { get; }
+        public Vector2 WorldSize => new Vector2(Width * CellSize, Height * CellSize);
 
         public BoardLayout(int width, int height, float cellSize)
         {
