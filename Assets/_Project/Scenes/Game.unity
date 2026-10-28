@@ -153,6 +153,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects: []
   _boardView: {fileID: 1002499339}
+  _camera: {fileID: 437803000}
   _cellSize: 0.65
 --- !u!4 &125867750
 Transform:
