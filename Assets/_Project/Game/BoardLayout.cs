@@ -38,6 +38,12 @@ namespace SlidingBlock.Game
             return (blockPos + blockFarEnd) / 2;
         }
 
+        public Vector3 BlockCenter(Block block, float cellOffset)
+        {
+            Vector3 axis = block.Axis == Axis.Horizontal ? Vector3.right : Vector3.up;
+            return BlockCenter(block) + axis * (cellOffset * CellSize);
+        }
+
         public Vector2 BlockSize(Block block)
         {
             float length = block.Length * CellSize;

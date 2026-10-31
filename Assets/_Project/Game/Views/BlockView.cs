@@ -25,6 +25,11 @@ namespace SlidingBlock.Game
             transform.localScale = new Vector3(size.x - _padding, size.y - _padding, 1f);
         }
 
+        public void SetPosition(Vector3 center)
+        {
+            transform.position = center;
+        }
+
         public UniTask AnimateTo(Vector3 center)
         {
             return LMotion.Create(transform.position, center, _moveDuration)
