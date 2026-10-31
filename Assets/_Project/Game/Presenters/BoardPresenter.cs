@@ -28,7 +28,7 @@ namespace SlidingBlock.Game
             _boardView.SetSize(_boardLayout.WorldSize);
             foreach (Block block in _board.Blocks)
             {
-                BlockView blockView = _boardView.CreateBlockView();
+                var blockView = _boardView.CreateBlockView();
                 blockView.SetTarget(block.IsTarget);
                 _blockViews[block.Id] = blockView;
                 UpdateBlockView(block.Id);
@@ -43,11 +43,27 @@ namespace SlidingBlock.Game
             return true;
         }
 
+        public void PreviewDrag(int blockId, float cellOffset)
+        {
+            var block = _board.GetBlock(blockId);
+            var blockView = _blockViews[blockId];
+
+            blockView.SetPosition(_boardLayout.BlockCenter(block, cellOffset));
+        }
+
+        public bool EndDrag(int blockId, int distance)
+        {
+            if (distance != 0 && TryMove(new Move(blockId, distance))) return true;
+
+            AnimateBlockViewAsync(blockId).Forget();
+            return false;
+        }
+
         private async UniTaskVoid AnimateBlockViewAsync(int blockId)
         {
             IsAnimating = true;
-            Block block = _board.GetBlock(blockId);
-            BlockView blockView = _blockViews[blockId];
+            var block = _board.GetBlock(blockId);
+            var blockView = _blockViews[blockId];
             try
             {
                 await blockView.AnimateTo(_boardLayout.BlockCenter(block));
@@ -60,8 +76,8 @@ namespace SlidingBlock.Game
 
         private void UpdateBlockView(int blockId)
         {
-            Block block = _board.GetBlock(blockId);
-            BlockView blockView = _blockViews[blockId];
+            var block = _board.GetBlock(blockId);
+            var blockView = _blockViews[blockId];
             blockView.SetBounds(_boardLayout.BlockCenter(block), _boardLayout.BlockSize(block));
         }
     }
