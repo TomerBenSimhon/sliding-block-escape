@@ -12,7 +12,7 @@ namespace SlidingBlock.Game
         private readonly BoardLayout _boardLayout;
         private readonly Board _board;
         private readonly BoardPresenter _boardPresenter;
-        
+
         private int _draggedBlockId = Board.Empty;
         private GridPos _pressCell;
 
@@ -23,12 +23,12 @@ namespace SlidingBlock.Game
             _board = board ?? throw new ArgumentNullException(nameof(board));
             _boardPresenter = boardPresenter ?? throw new ArgumentNullException(nameof(boardPresenter));
         }
-        
+
         public void Tick()
         {
             var pointer = Pointer.current;
             if (pointer == null) return;
-            
+
             if (pointer.press.wasPressedThisFrame)
             {
                 GridPos cell = ScreenToCell(pointer.position.ReadValue());
@@ -49,7 +49,7 @@ namespace SlidingBlock.Game
 
         private void OnPress(GridPos cell)
         {
-            if (!_board.IsInside(cell)) return;
+            if (!_board.IsInside(cell) || _boardPresenter.IsAnimating) return;
             _draggedBlockId = _board.BlockAt(cell);
             _pressCell = cell;
         }
@@ -57,7 +57,7 @@ namespace SlidingBlock.Game
         private void OnRelease(GridPos cell)
         {
             if (_draggedBlockId == Board.Empty) return;
-            
+
             Block draggedBlock = _board.GetBlock(_draggedBlockId);
             GridPos delta = cell - _pressCell;
             int distance = draggedBlock.Axis == Axis.Horizontal ? delta.X : delta.Y;
@@ -66,7 +66,7 @@ namespace SlidingBlock.Game
             {
                 distance -= Math.Sign(distance);
             }
-            
+
             if (distance != 0 && _board.IsSolved) Debug.Log("Board is solved");
             _draggedBlockId = Board.Empty;
         }

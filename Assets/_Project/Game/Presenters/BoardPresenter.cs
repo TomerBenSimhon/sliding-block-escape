@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using SlidingBlock.Core;
 using VContainer.Unity;
 
@@ -10,6 +11,8 @@ namespace SlidingBlock.Game
         private readonly BoardLayout _boardLayout;
         private readonly BoardView _boardView;
         private readonly BlockView[] _blockViews;
+
+        public bool IsAnimating { get; private set; }
 
         public BoardPresenter(Board board, BoardLayout boardLayout, BoardView boardView)
         {
@@ -34,10 +37,25 @@ namespace SlidingBlock.Game
 
         public bool TryMove(Move move)
         {
-            if (!_board.CanMove(move)) return false;
+            if (IsAnimating || !_board.CanMove(move)) return false;
             _board.ApplyMove(move);
-            UpdateBlockView(move.BlockId);
+            AnimateBlockViewAsync(move.BlockId).Forget();
             return true;
+        }
+
+        private async UniTaskVoid AnimateBlockViewAsync(int blockId)
+        {
+            IsAnimating = true;
+            Block block = _board.GetBlock(blockId);
+            BlockView blockView = _blockViews[blockId];
+            try
+            {
+                await blockView.AnimateTo(_boardLayout.BlockCenter(block));
+            }
+            finally
+            {
+                IsAnimating = false;
+            }
         }
 
         private void UpdateBlockView(int blockId)

@@ -1,3 +1,6 @@
+using Cysharp.Threading.Tasks;
+using LitMotion;
+using LitMotion.Extensions;
 using UnityEngine;
 
 namespace SlidingBlock.Game
@@ -9,7 +12,8 @@ namespace SlidingBlock.Game
         [SerializeField] private Color _normalColor = Color.white;
         [SerializeField] private Color _targetColor = Color.red;
         [SerializeField, Min(0f)] private float _padding = 0.1f;
-        
+        [SerializeField, Min(0f)] private float _moveDuration = 0.15f;
+
         public void SetTarget(bool isTarget)
         {
             _spriteRenderer.color = isTarget ? _targetColor : _normalColor;
@@ -19,6 +23,14 @@ namespace SlidingBlock.Game
         {
             transform.position = center;
             transform.localScale = new Vector3(size.x - _padding, size.y - _padding, 1f);
+        }
+
+        public UniTask AnimateTo(Vector3 center)
+        {
+            return LMotion.Create(transform.position, center, _moveDuration)
+                .WithEase(Ease.OutCubic)
+                .BindToPosition(transform)
+                .ToUniTask(destroyCancellationToken);
         }
     }
 }
