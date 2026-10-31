@@ -363,5 +363,40 @@ namespace SlidingBlock.Core.Tests
 
             Assert.IsTrue(board.IsSolved);
         }
+
+        // --- MaxDistance ---
+
+        [TestCase(1, 1, 2)]   // up into (2,4), (2,5); (2,6) is outside
+        [TestCase(1, -1, 1)]  // down into (2,0); (2,-1) is outside
+        [TestCase(0, 1, 0)]   // (2,2) is block 1
+        [TestCase(0, -1, 0)]  // already at the left edge
+        [TestCase(2, 1, 1)]   // right into (5,4); (6,4) is outside
+        [TestCase(2, -1, 3)]  // left through (2,4), (1,4), (0,4)
+        public void MaxDistance_ExampleBoard_ReturnsFreeCells(int blockId, int direction, int expected)
+        {
+            var board = ExampleBoard();
+
+            int steps = board.MaxDistance(blockId, direction);
+
+            Assert.AreEqual(expected, steps);
+        }
+
+        [TestCase(0)]
+        [TestCase(2)]
+        public void MaxDistance_InvalidDirection_Throws(int direction)
+        {
+            var board = ExampleBoard();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => board.MaxDistance(0, direction));
+        }
+
+        [Test]
+        public void MaxDistance_InvalidBlockId_Throws()
+        {
+            // The example board has ids 0-2.
+            var board = ExampleBoard();
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => board.MaxDistance(3, 1));
+        }
     }
 }

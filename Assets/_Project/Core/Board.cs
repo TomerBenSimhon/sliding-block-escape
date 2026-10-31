@@ -105,6 +105,25 @@ namespace SlidingBlock.Core
             FillCells(moved, move.BlockId);
         }
 
+        public int MaxDistance(int blockId, int direction)
+        {
+            if (direction != 1 && direction != -1)
+                throw new ArgumentOutOfRangeException(nameof(direction), direction, "Direction must be either 1 or -1");
+
+            var block = GetBlock(blockId);
+            GridPos step = block.Direction * direction;
+            GridPos next = (direction > 0 ? block.CellAtFarEnd : block.Position) + step;
+
+            int steps = 0;
+            while (IsInside(next) && BlockAt(next) == Empty)
+            {
+                steps++;
+                next += step;
+            }
+
+            return steps;
+        }
+
         // Solved when the target's far end touches the edge in its direction (the exit).
         public bool IsSolved => !IsInside(Target.CellAtFarEnd + Target.Direction);
 
