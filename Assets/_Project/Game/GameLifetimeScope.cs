@@ -10,12 +10,12 @@ namespace SlidingBlock.Game
         [SerializeField] private BoardView _boardView;
         [SerializeField] private Camera _camera;
         [SerializeField, Min(0.1f)] private float _cellSize = 0.65f;
-        
+
         protected override void Configure(IContainerBuilder builder)
         {
             Board board = TestLevels.CreateExampleBoard();
             BoardLayout boardLayout = new BoardLayout(board.Width, board.Height, _cellSize);
-            
+
             builder.RegisterInstance(board);
             builder.RegisterInstance(boardLayout);
             builder.RegisterComponent(_boardView);

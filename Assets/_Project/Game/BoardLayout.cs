@@ -17,7 +17,7 @@ namespace SlidingBlock.Game
             if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width), width, "Width must be greater than zero");
             if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height), height, "Height must be greater than zero");
             if (cellSize <= 0) throw new ArgumentOutOfRangeException(nameof(cellSize), cellSize, "CellSize must be greater than zero");
-            
+
             Width = width;
             Height = height;
             CellSize = cellSize;
