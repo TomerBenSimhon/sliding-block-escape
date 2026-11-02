@@ -1,6 +1,7 @@
 using System;
 using Cysharp.Threading.Tasks;
 using SlidingBlock.Core;
+using UnityEngine;
 using VContainer.Unity;
 
 namespace SlidingBlock.Game
@@ -13,6 +14,8 @@ namespace SlidingBlock.Game
         private readonly BlockView[] _blockViews;
 
         public bool IsAnimating { get; private set; }
+
+        public event Action Solved;
 
         public BoardPresenter(Board board, BoardLayout boardLayout, BoardView boardView)
         {
@@ -72,6 +75,8 @@ namespace SlidingBlock.Game
             {
                 IsAnimating = false;
             }
+
+            if (_board.IsSolved) Solved?.Invoke();
         }
 
         private void UpdateBlockView(int blockId)

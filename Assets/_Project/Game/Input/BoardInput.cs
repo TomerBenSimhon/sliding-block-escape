@@ -55,7 +55,7 @@ namespace SlidingBlock.Game
 
         private void OnPress(Vector3 worldPosition)
         {
-            if (_boardPresenter.IsAnimating) return;
+            if (_boardPresenter.IsAnimating || _board.IsSolved) return;
 
             GridPos cell = _boardLayout.WorldToCell(worldPosition);
             if (!_board.IsInside(cell)) return;
@@ -87,8 +87,7 @@ namespace SlidingBlock.Game
             if (_draggedBlockId == Board.Empty) return;
 
             int distance = Mathf.RoundToInt(_dragOffset);
-            bool moved = _boardPresenter.EndDrag(_draggedBlockId, distance);
-            if (moved && _board.IsSolved) Debug.Log("Board is solved");
+            _boardPresenter.EndDrag(_draggedBlockId, distance);
 
             _draggedBlockId = Board.Empty;
         }
