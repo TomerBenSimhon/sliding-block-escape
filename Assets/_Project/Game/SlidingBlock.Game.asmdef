@@ -9,7 +9,8 @@
         "UniTask",
         "LitMotion",
         "LitMotion.Extensions",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
