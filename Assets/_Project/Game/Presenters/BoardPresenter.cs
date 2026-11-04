@@ -1,7 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
 using SlidingBlock.Core;
-using UnityEngine;
 using VContainer.Unity;
 
 namespace SlidingBlock.Game

@@ -273,6 +273,7 @@ MonoBehaviour:
   _boardView: {fileID: 1002499339}
   _camera: {fileID: 437803000}
   _cellSize: 0.65
+  _winScreenView: {fileID: 98450853}
 --- !u!4 &125867750
 Transform:
   m_ObjectHideFlags: 0

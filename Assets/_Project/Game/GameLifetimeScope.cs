@@ -10,6 +10,7 @@ namespace SlidingBlock.Game
         [SerializeField] private BoardView _boardView;
         [SerializeField] private Camera _camera;
         [SerializeField, Min(0.1f)] private float _cellSize = 0.65f;
+        [SerializeField] private WinScreenView _winScreenView;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -20,8 +21,10 @@ namespace SlidingBlock.Game
             builder.RegisterInstance(boardLayout);
             builder.RegisterComponent(_boardView);
             builder.RegisterComponent(_camera);
+            builder.RegisterComponent(_winScreenView);
             builder.RegisterEntryPoint<BoardPresenter>().AsSelf();
             builder.RegisterEntryPoint<BoardInput>();
+            builder.RegisterEntryPoint<WinScreenPresenter>();
         }
     }
 }
