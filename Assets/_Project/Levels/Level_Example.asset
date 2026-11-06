@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd1f270e30949f5918fddbfb815c769, type: 3}
+  m_Name: Level_Example
+  m_EditorClassIdentifier: SlidingBlock.Data::SlidingBlock.Data.LevelData
+  _width: 6
+  _height: 6
+  _blockDatas:
+  - _position: {x: 0, y: 2}
+    _length: 2
+    _axis: 0
+    _isTarget: 1
+  - _position: {x: 2, y: 1}
+    _length: 3
+    _axis: 1
+    _isTarget: 0
+  - _position: {x: 2, y: 4}
+    _length: 2
+    _axis: 0
+    _isTarget: 0
