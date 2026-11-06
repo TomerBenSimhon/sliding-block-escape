@@ -274,6 +274,7 @@ MonoBehaviour:
   _camera: {fileID: 437803000}
   _cellSize: 0.65
   _winScreenView: {fileID: 98450853}
+  _levelData: {fileID: 11400000, guid: 589146f90bca6c64594f0da527a8a0dc, type: 2}
 --- !u!4 &125867750
 Transform:
   m_ObjectHideFlags: 0

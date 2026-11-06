@@ -1,4 +1,6 @@
+using System;
 using SlidingBlock.Core;
+using SlidingBlock.Data;
 using VContainer;
 using VContainer.Unity;
 using UnityEngine;
@@ -11,10 +13,15 @@ namespace SlidingBlock.Game
         [SerializeField] private Camera _camera;
         [SerializeField, Min(0.1f)] private float _cellSize = 0.65f;
         [SerializeField] private WinScreenView _winScreenView;
+        [SerializeField] private LevelData _levelData;
 
         protected override void Configure(IContainerBuilder builder)
         {
-            Board board = TestLevels.CreateExampleBoard();
+            if (_levelData == null)
+                throw new InvalidOperationException($"{nameof(GameLifetimeScope)} has no " +
+                                                    $"{nameof(LevelData)} assigned. Assign a level in the Inspector.");
+            
+            Board board = _levelData.CreateBoard();
             BoardLayout boardLayout = new BoardLayout(board.Width, board.Height, _cellSize);
 
             builder.RegisterInstance(board);
