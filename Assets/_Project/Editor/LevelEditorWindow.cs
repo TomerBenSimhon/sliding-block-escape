@@ -1,3 +1,4 @@
+using System;
 using SlidingBlock.Core;
 using SlidingBlock.Data;
 using UnityEditor;
@@ -5,18 +6,28 @@ using UnityEngine;
 
 namespace SlidingBlock.Editor
 {
-    // Editor-only window that shows a LevelData as a grid. Read-only for now; editing comes next.
+    // Editor-only window to view and edit a LevelData: select, edit, add and delete blocks.
     public sealed class LevelEditorWindow : EditorWindow
     {
         private const float CellSize = 48f;
         private const float Gap = 2f;
+        private const int NoSelection = -1;
+
+        private const string BlockDatasField = "_blockDatas";
+        private const string PositionField = "_position";
+        private const string LengthField = "_length";
+        private const string AxisField = "_axis";
+        private const string IsTargetField = "_isTarget";
 
         private static readonly Color CellColor = new Color(0.2f, 0.2f, 0.2f);
         private static readonly Color BlockColor = new Color(0.25f, 0.5f, 0.85f);
         private static readonly Color TargetColor = new Color(0.85f, 0.25f, 0.25f);
+        private static readonly Color SelectedColor = new Color(0.95f, 0.8f, 0.2f);
 
         [SerializeField] private LevelData _levelData;
+        [SerializeField] private int _selectedIndex = NoSelection;
 
+        private SerializedObject _serializedLevelData;
         private GUIStyle _centeredLabel;
 
         [MenuItem("Sliding Block/Level Editor")]
@@ -43,13 +54,31 @@ namespace SlidingBlock.Editor
                 return;
             }
 
+            if (_serializedLevelData == null || _serializedLevelData.targetObject != _levelData)
+                _serializedLevelData = new SerializedObject(_levelData);
+
+            _serializedLevelData.Update();
+            SerializedProperty blockDatas = FindProperty(_serializedLevelData, BlockDatasField);
+
+            if (_selectedIndex >= blockDatas.arraySize)
+                _selectedIndex = NoSelection;
+
+            int selected = _selectedIndex;
+
             EditorGUILayout.LabelField($"{_levelData.Width} × {_levelData.Height}, {_levelData.BlockDatas.Count} blocks");
             EditorGUILayout.Space();
 
             Rect area = GUILayoutUtility.GetRect(_levelData.Width * CellSize, _levelData.Height * CellSize);
 
             DrawCells(area);
-            DrawBlocks(area);
+            DrawBlocks(area, selected);
+            HandleClick(area);
+            DrawAddButton(blockDatas);
+
+            if (selected != NoSelection)
+                DrawSelectedPanel(blockDatas, selected);
+
+            _serializedLevelData.ApplyModifiedProperties();
         }
 
         private void DrawCells(Rect area)
@@ -64,17 +93,104 @@ namespace SlidingBlock.Editor
             }
         }
 
-        private void DrawBlocks(Rect area)
+        private void DrawBlocks(Rect area, int selected)
         {
             for (int i = 0; i < _levelData.BlockDatas.Count; i++)
             {
                 BlockData blockData = _levelData.BlockDatas[i];
                 Rect rect = BlockRect(area, blockData);
-                Color color = blockData.IsTarget ? TargetColor : BlockColor;
+                Color color = i == selected ? SelectedColor :
+                    blockData.IsTarget ? TargetColor : BlockColor;
 
                 EditorGUI.DrawRect(Shrink(rect, Gap * 2), color);
                 GUI.Label(rect, i.ToString(), _centeredLabel);
             }
+        }
+
+        // Left-click selects the block under the mouse; clicking empty grid space deselects.
+        private void HandleClick(Rect area)
+        {
+            Event e = Event.current;
+
+            if (e.type != EventType.MouseDown || e.button != 0)
+                return;
+
+            if (!area.Contains(e.mousePosition))
+                return;
+
+            _selectedIndex = NoSelection;
+
+            for (int i = _levelData.BlockDatas.Count - 1; i >= 0; i--)
+            {
+                if (BlockRect(area, _levelData.BlockDatas[i]).Contains(e.mousePosition))
+                {
+                    _selectedIndex = i;
+                    break;
+                }
+            }
+
+            e.Use();
+            Repaint();
+        }
+
+        private void DrawAddButton(SerializedProperty blockDatas)
+        {
+            EditorGUILayout.Space();
+
+            if (!GUILayout.Button("Add block"))
+                return;
+
+            int index = blockDatas.arraySize;
+            blockDatas.arraySize++;
+
+            SerializedProperty blockData = blockDatas.GetArrayElementAtIndex(index);
+            FindRelative(blockData, PositionField).vector2IntValue = Vector2Int.zero;
+            FindRelative(blockData, LengthField).intValue = 2;
+            FindRelative(blockData, AxisField).enumValueIndex = (int)Axis.Horizontal;
+            FindRelative(blockData, IsTargetField).boolValue = false;
+
+            _selectedIndex = index;
+        }
+
+        private void DrawSelectedPanel(SerializedProperty blockDatas, int selected)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField($"Block {selected}", EditorStyles.boldLabel);
+
+            SerializedProperty blockData = blockDatas.GetArrayElementAtIndex(selected);
+
+            EditorGUILayout.PropertyField(FindRelative(blockData, PositionField));
+            EditorGUILayout.PropertyField(FindRelative(blockData, LengthField));
+            EditorGUILayout.PropertyField(FindRelative(blockData, AxisField));
+            EditorGUILayout.PropertyField(FindRelative(blockData, IsTargetField));
+
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Delete block"))
+            {
+                blockDatas.DeleteArrayElementAtIndex(selected);
+                _selectedIndex = NoSelection;
+            }
+        }
+
+        private static SerializedProperty FindProperty(SerializedObject serializedObject, string name)
+        {
+            SerializedProperty property = serializedObject.FindProperty(name);
+
+            if (property == null)
+                throw new InvalidOperationException($"{serializedObject.targetObject.GetType().Name} has no serialized field '{name}'. Was it renamed?");
+
+            return property;
+        }
+
+        private static SerializedProperty FindRelative(SerializedProperty parent, string name)
+        {
+            SerializedProperty property = parent.FindPropertyRelative(name);
+
+            if (property == null)
+                throw new InvalidOperationException($"{parent.propertyPath} has no serialized field '{name}'. Was it renamed?");
+
+            return property;
         }
 
         // Grid y goes up, GUI y goes down, so the row on screen is flipped.
@@ -85,7 +201,7 @@ namespace SlidingBlock.Editor
             return new Rect(area.x + x * CellSize, area.y + screenRow * CellSize, CellSize, CellSize);
         }
 
-        // One rect covering all of the block's cells. Its top-left corner is the cell that is
+        // One rect covering all the block's cells. Its top-left corner is the cell that is
         // left-most (x of the anchor) and top-most (y of the far end, for vertical blocks).
         private Rect BlockRect(Rect area, BlockData blockData)
         {
