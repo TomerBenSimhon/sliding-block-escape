@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SlidingBlock.Editor
 {
-    // Editor-only window to view and edit a LevelData: select, edit, add and delete blocks.
+    // Editor-only window to view and edit a LevelData: select, drag, edit, add and delete blocks.
     public sealed class LevelEditorWindow : EditorWindow
     {
         private const float CellSize = 48f;
@@ -29,6 +29,11 @@ namespace SlidingBlock.Editor
 
         private SerializedObject _serializedLevelData;
         private GUIStyle _centeredLabel;
+
+        // Drag state. Not serialized: a drag can't survive a recompile anyway.
+        private Vector2Int _dragStartCell;       // the cell under the mouse when the drag started
+        private Vector2Int _dragStartPosition;   // the block's anchor when the drag started
+        private int _dragUndoGroup;              // merged into one undo step on release
 
         [MenuItem("Sliding Block/Level Editor")]
         private static void Open()
@@ -72,7 +77,7 @@ namespace SlidingBlock.Editor
 
             DrawCells(area);
             DrawBlocks(area, selected);
-            HandleClick(area);
+            HandleMouse(area, blockDatas);
             DrawAddButton(blockDatas);
 
             if (selected != NoSelection)
@@ -107,15 +112,29 @@ namespace SlidingBlock.Editor
             }
         }
 
-        // Left-click selects the block under the mouse; clicking empty grid space deselects.
-        private void HandleClick(Rect area)
+        // Left-click selects the block under the mouse (empty grid space deselects); dragging a block moves it.
+        private void HandleMouse(Rect area, SerializedProperty blockDatas)
         {
+            int controlId = GUIUtility.GetControlID(FocusType.Passive);
             Event e = Event.current;
 
-            if (e.type != EventType.MouseDown || e.button != 0)
-                return;
+            switch (e.GetTypeForControl(controlId))
+            {
+                case EventType.MouseDown:
+                    HandleMouseDown(area, e, controlId);
+                    break;
+                case EventType.MouseDrag:
+                    HandleMouseDrag(area, e, controlId, blockDatas);
+                    break;
+                case EventType.MouseUp:
+                    HandleMouseUp(e, controlId);
+                    break;
+            }
+        }
 
-            if (!area.Contains(e.mousePosition))
+        private void HandleMouseDown(Rect area, Event e, int controlId)
+        {
+            if (e.button != 0 || !area.Contains(e.mousePosition))
                 return;
 
             _selectedIndex = NoSelection;
@@ -129,8 +148,46 @@ namespace SlidingBlock.Editor
                 }
             }
 
+            if (_selectedIndex != NoSelection)
+            {
+                _dragStartCell = MouseToCell(area, e.mousePosition);
+                _dragStartPosition = _levelData.BlockDatas[_selectedIndex].Position;
+                _dragUndoGroup = Undo.GetCurrentGroup();
+                Undo.SetCurrentGroupName("Move Block");
+                GUIUtility.hotControl = controlId;
+            }
+
             e.Use();
             Repaint();
+        }
+
+        private void HandleMouseDrag(Rect area, Event e, int controlId, SerializedProperty blockDatas)
+        {
+            if (GUIUtility.hotControl != controlId) // not our drag → ignore
+                return;
+
+            BlockData blockData = _levelData.BlockDatas[_selectedIndex];
+            Vector2Int delta = MouseToCell(area, e.mousePosition) - _dragStartCell;
+            Vector2Int newPosition = ClampInside(blockData, _dragStartPosition + delta);
+
+            SerializedProperty position = FindRelative(blockDatas.GetArrayElementAtIndex(_selectedIndex), PositionField);
+
+            if (position.vector2IntValue != newPosition) // only write real changes
+                position.vector2IntValue = newPosition;
+
+            e.Use();
+            Repaint();
+        }
+
+        private void HandleMouseUp(Event e, int controlId)
+        {
+            if (GUIUtility.hotControl != controlId)
+                return;
+
+            GUIUtility.hotControl = 0;
+            Undo.CollapseUndoOperations(_dragUndoGroup);
+
+            e.Use();
         }
 
         private void DrawAddButton(SerializedProperty blockDatas)
@@ -191,6 +248,26 @@ namespace SlidingBlock.Editor
                 throw new InvalidOperationException($"{parent.propertyPath} has no serialized field '{name}'. Was it renamed?");
 
             return property;
+        }
+
+        // The reverse of CellRect: GUI point → grid cell (may be outside the grid).
+        private Vector2Int MouseToCell(Rect area, Vector2 mouse)
+        {
+            Vector2 local = mouse - area.position;
+            int x = Mathf.FloorToInt(local.x / CellSize);
+            int screenRow = Mathf.FloorToInt(local.y / CellSize);
+
+            return new Vector2Int(x, _levelData.Height - 1 - screenRow);
+        }
+
+        // Clamps an anchor position so every cell of the block stays inside the grid.
+        private Vector2Int ClampInside(BlockData blockData, Vector2Int position)
+        {
+            bool isHorizontal = blockData.Axis == Axis.Horizontal;
+            int maxX = _levelData.Width - (isHorizontal ? blockData.Length : 1);
+            int maxY = _levelData.Height - (isHorizontal ? 1 : blockData.Length);
+
+            return new Vector2Int(Mathf.Clamp(position.x, 0, maxX), Mathf.Clamp(position.y, 0, maxY));
         }
 
         // Grid y goes up, GUI y goes down, so the row on screen is flipped.
