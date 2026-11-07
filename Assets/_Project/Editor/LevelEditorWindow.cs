@@ -56,6 +56,7 @@ namespace SlidingBlock.Editor
             _centeredLabel ??= new GUIStyle(EditorStyles.boldLabel) { alignment = TextAnchor.MiddleCenter };
 
             _levelData = (LevelData)EditorGUILayout.ObjectField("Level", _levelData, typeof(LevelData), false);
+            DrawToolbar();
 
             if (_levelData == null)
             {
@@ -88,6 +89,57 @@ namespace SlidingBlock.Editor
                 DrawSelectedPanel(selected);
 
             _editing.Apply();
+        }
+
+        #endregion
+
+        #region Toolbar: new, duplicate, save
+
+        private void DrawToolbar()
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("New"))
+                CreateNewLevel();
+
+            using (new EditorGUI.DisabledScope(_levelData == null))
+            {
+                if (GUILayout.Button("Duplicate"))
+                    DuplicateLevel();
+            }
+
+            using (new EditorGUI.DisabledScope(_levelData == null || !LevelAssets.HasUnsavedChanges(_levelData)))
+            {
+                if (GUILayout.Button("Save"))
+                    LevelAssets.Save(_levelData);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void CreateNewLevel()
+        {
+            string path = EditorUtility.SaveFilePanelInProject(
+                "New level", "Level_New", "asset", "Choose where to save the new level.", LevelAssets.LevelsFolder);
+
+            if (!string.IsNullOrEmpty(path)) // empty = the user pressed Cancel
+                OpenLevel(LevelAssets.CreateNew(path));
+
+            GUIUtility.ExitGUI(); // always, even after Cancel: the dialog interrupted this pass
+        }
+
+        private void DuplicateLevel()
+        {
+            OpenLevel(LevelAssets.Duplicate(_levelData));
+            GUIUtility.ExitGUI();
+        }
+
+        // Switches the window to another level. _editing is rebuilt on the next pass (OnGUI sees a different LevelData).
+        private void OpenLevel(LevelData level)
+        {
+            _levelData = level;
+            _selectedIndex = NoSelection;
+            EditorGUIUtility.PingObject(level); // highlights the asset in the Project window
         }
 
         #endregion
