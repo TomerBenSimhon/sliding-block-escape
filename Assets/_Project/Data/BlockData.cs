@@ -7,6 +7,13 @@ namespace SlidingBlock.Data
     [Serializable]
     public struct BlockData
     {
+        // Field names for editor code that edits levels through SerializedObject.
+        // nameof keeps them in sync if a field is renamed (and won't compile if it is removed).
+        public const string PositionFieldName = nameof(_position);
+        public const string LengthFieldName = nameof(_length);
+        public const string AxisFieldName = nameof(_axis);
+        public const string IsTargetFieldName = nameof(_isTarget);
+
         [SerializeField] private Vector2Int _position;
         [SerializeField] private int _length;
         [SerializeField] private Axis _axis;

@@ -7,6 +7,9 @@ namespace SlidingBlock.Data
     [CreateAssetMenu(fileName = "LevelData", menuName = "Sliding Block/Level Data")]
     public sealed class LevelData : ScriptableObject
     {
+        // Field name for editor code that edits levels through SerializedObject (see BlockData).
+        public const string BlockDatasFieldName = nameof(_blockDatas);
+
         [SerializeField] private int _width = 6;
         [SerializeField] private int _height = 6;
         [SerializeField] private List<BlockData> _blockDatas = new();
