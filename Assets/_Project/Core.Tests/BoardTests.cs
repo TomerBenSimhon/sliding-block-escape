@@ -1,29 +1,11 @@
 using System;
 using NUnit.Framework;
+using static SlidingBlock.Core.Tests.TestBoards;
 
 namespace SlidingBlock.Core.Tests
 {
     public class BoardTests
     {
-        // Short way to build a block: B(id, x, y, length, axis, isTarget)
-        private static Block B(int id, int x, int y, int length, Axis axis, bool isTarget = false)
-        {
-            return new Block(id, new GridPos(x, y), length, axis, isTarget);
-        }
-
-        // The example board from the diagram
-        private static Block[] ExampleBlocks()
-        {
-            return new[]
-            {
-                B(0, 0, 2, 2, Axis.Horizontal, isTarget: true),
-                B(1, 2, 1, 3, Axis.Vertical),
-                B(2, 3, 4, 2, Axis.Horizontal),
-            };
-        }
-
-        private static Board ExampleBoard() => new Board(6, 6, ExampleBlocks());
-
         // --- Construction ---
 
         [Test]
