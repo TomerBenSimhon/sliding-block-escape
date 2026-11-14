@@ -124,6 +124,29 @@ namespace SlidingBlock.Core
             return steps;
         }
 
+        // Fills results with every legal move: each block, every distance it can slide, forward then backward.
+        // The caller owns the list and can reuse it, so this allocates nothing once the list is big enough.
+        public void GetLegalMoves(List<Move> results)
+        {
+            if (results == null) throw new ArgumentNullException(nameof(results));
+            results.Clear();
+
+            for (int id = 0; id < _blocks.Length; id++)
+            {
+                int maxForward = MaxDistance(id, 1);
+                for (int d = 1; d <= maxForward; d++)
+                {
+                    results.Add(new Move(id, d));
+                }
+
+                int maxBackward = MaxDistance(id, -1);
+                for (int d = 1; d <= maxBackward; d++)
+                {
+                    results.Add(new Move(id, -d));
+                }
+            }
+        }
+
         // Solved when the target's far end touches the edge in its direction (the exit).
         public bool IsSolved => !IsInside(Target.CellAtFarEnd + Target.Direction);
 
