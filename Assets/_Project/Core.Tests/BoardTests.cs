@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using static SlidingBlock.Core.Tests.TestBoards;
 
@@ -379,6 +380,73 @@ namespace SlidingBlock.Core.Tests
             var board = ExampleBoard();
 
             Assert.Throws<ArgumentOutOfRangeException>(() => board.MaxDistance(3, 1));
+        }
+
+        // --- GetLegalMoves ---
+
+        [Test]
+        public void GetLegalMoves_ExampleBoard_ReturnsAllMovesInOrder()
+        {
+            // From the MaxDistance cases above: block 0 can't move, block 1 goes +2/-1, block 2 goes +1/-3.
+            // Order: block by block, forward before backward, short distances first.
+            var board = ExampleBoard();
+            var results = new List<Move>();
+
+            board.GetLegalMoves(results);
+
+            var expected = new List<Move>
+            {
+                new Move(1, 1), new Move(1, 2), new Move(1, -1),
+                new Move(2, 1), new Move(2, -1), new Move(2, -2), new Move(2, -3),
+            };
+            CollectionAssert.AreEqual(expected, results);
+        }
+
+        [Test]
+        public void GetLegalMoves_EveryMoveIsLegal()
+        {
+            var board = ExampleBoard();
+            var results = new List<Move>();
+
+            board.GetLegalMoves(results);
+
+            foreach (var move in results)
+            {
+                Assert.IsTrue(board.CanMove(move), $"{move} is in the list but CanMove says it's illegal");
+            }
+        }
+
+        [Test]
+        public void GetLegalMoves_ClearsResultsFirst()
+        {
+            // The solver reuses one list for every state, so old moves must not leak into the next call.
+            var board = ExampleBoard();
+            var results = new List<Move> { new Move(0, 1) };
+
+            board.GetLegalMoves(results);
+
+            Assert.AreEqual(7, results.Count);
+            CollectionAssert.DoesNotContain(results, new Move(0, 1));
+        }
+
+        [Test]
+        public void GetLegalMoves_NoBlockCanMove_ReturnsEmpty()
+        {
+            // A 2x1 board completely filled by the target: it has nowhere to slide.
+            var board = new Board(2, 1, new[] { B(0, 0, 0, 2, Axis.Horizontal, isTarget: true) });
+            var results = new List<Move>();
+
+            board.GetLegalMoves(results);
+
+            Assert.AreEqual(0, results.Count);
+        }
+
+        [Test]
+        public void GetLegalMoves_NullResults_Throws()
+        {
+            var board = ExampleBoard();
+
+            Assert.Throws<ArgumentNullException>(() => board.GetLegalMoves(null));
         }
     }
 }
