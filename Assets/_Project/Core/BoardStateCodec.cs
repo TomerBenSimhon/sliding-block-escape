@@ -8,7 +8,7 @@ namespace SlidingBlock.Core
     {
         private readonly int _width;
         private readonly int _height;
-        private readonly Block[] _startBlocks;   // the template: everything except the moving coordinate
+        private readonly Block[] _levelBlocks;   // the level's layout: everything except the moving coordinate
         private readonly int _bitsPerBlock;
         private readonly ulong _mask;            // _bitsPerBlock ones, e.g. 0b111
 
@@ -19,16 +19,16 @@ namespace SlidingBlock.Core
             _width = board.Width;
             _height = board.Height;
 
-            _startBlocks = new Block[board.Blocks.Count];
-            for (int i = 0; i < _startBlocks.Length; i++)
+            _levelBlocks = new Block[board.Blocks.Count];
+            for (int i = 0; i < _levelBlocks.Length; i++)
             {
-                _startBlocks[i] = board.Blocks[i];
+                _levelBlocks[i] = board.Blocks[i];
             }
 
             _bitsPerBlock = BitsNeeded(Math.Max(_width, _height));
-            if (_startBlocks.Length * _bitsPerBlock > 64)
+            if (_levelBlocks.Length * _bitsPerBlock > 64)
                 throw new ArgumentException(
-                    $"{_startBlocks.Length} blocks × {_bitsPerBlock} bits = {_startBlocks.Length * _bitsPerBlock} bits, but a key holds only 64",
+                    $"{_levelBlocks.Length} blocks × {_bitsPerBlock} bits = {_levelBlocks.Length * _bitsPerBlock} bits, but a key holds only 64",
                     nameof(board));
 
             _mask = (1UL << _bitsPerBlock) - 1;
@@ -37,9 +37,9 @@ namespace SlidingBlock.Core
         public ulong Encode(Board board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
-            if (board.Width != _width || board.Height != _height || board.Blocks.Count != _startBlocks.Length)
+            if (board.Width != _width || board.Height != _height || board.Blocks.Count != _levelBlocks.Length)
                 throw new ArgumentException(
-                    $"Expected a {_width}x{_height} board with {_startBlocks.Length} blocks, " +
+                    $"Expected a {_width}x{_height} board with {_levelBlocks.Length} blocks, " +
                     $"got {board.Width}x{board.Height} with {board.Blocks.Count}",
                     nameof(board));
 
@@ -55,22 +55,22 @@ namespace SlidingBlock.Core
 
         public Board Decode(ulong key)
         {
-            var blocks = new Block[_startBlocks.Length];
+            var blocks = new Block[_levelBlocks.Length];
 
-            for (int i = 0; i < _startBlocks.Length; i++)
+            for (int i = 0; i < _levelBlocks.Length; i++)
             {
-                Block start = _startBlocks[i];
+                Block levelBlock = _levelBlocks[i];
                 int coordinate = (int)((key >> (i * _bitsPerBlock)) & _mask);
 
-                // The other coordinate never changes, so it comes from the starting block.
-                GridPos position = start.Axis switch
+                // The other coordinate never changes, so it comes from the level's block.
+                GridPos position = levelBlock.Axis switch
                 {
-                    Axis.Horizontal => new GridPos(coordinate, start.Position.Y),
-                    Axis.Vertical => new GridPos(start.Position.X, coordinate),
-                    _ => throw new ArgumentOutOfRangeException(nameof(start.Axis), start.Axis, "Invalid axis value")
+                    Axis.Horizontal => new GridPos(coordinate, levelBlock.Position.Y),
+                    Axis.Vertical => new GridPos(levelBlock.Position.X, coordinate),
+                    _ => throw new ArgumentOutOfRangeException(nameof(levelBlock.Axis), levelBlock.Axis, "Invalid axis value")
                 };
 
-                blocks[i] = start.WithPosition(position);
+                blocks[i] = levelBlock.WithPosition(position);
             }
 
             return new Board(_width, _height, blocks);
