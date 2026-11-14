@@ -15,9 +15,14 @@ namespace SlidingBlock.Editor
 
         private readonly SerializedObject _serializedLevelData;
         private readonly SerializedProperty _blockDatas;
+        private readonly SerializedProperty _parMoves;
 
         public LevelData LevelData { get; }
         public int BlockCount => _blockDatas.arraySize;
+        public int ParMoves => _parMoves.intValue;   // read through the serialized data, like GetBlock
+
+        // True when edits are waiting for Apply(). The window uses it to reset par before an edit is written.
+        public bool HasChanges => _serializedLevelData.hasModifiedProperties;
 
         public LevelDataEditing(LevelData levelData)
         {
@@ -28,6 +33,7 @@ namespace SlidingBlock.Editor
             LevelData = levelData;
             _serializedLevelData = new SerializedObject(levelData);
             _blockDatas = FindProperty(_serializedLevelData, LevelData.BlockDatasFieldName);
+            _parMoves = FindProperty(_serializedLevelData, LevelData.ParMovesFieldName);
         }
 
         // Pulls the asset's current values in (they may have changed in the Inspector or by Undo).
@@ -107,6 +113,15 @@ namespace SlidingBlock.Editor
 
             if (property.boolValue != isTarget)
                 property.boolValue = isTarget;
+        }
+
+        public void SetParMoves(int parMoves)
+        {
+            if (parMoves < 0)
+                throw new ArgumentOutOfRangeException(nameof(parMoves), parMoves, "Par can't be negative");
+
+            if (_parMoves.intValue != parMoves)
+                _parMoves.intValue = parMoves;
         }
 
         // One field of one block, e.g. block 1's "_length".

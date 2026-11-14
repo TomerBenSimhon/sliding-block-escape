@@ -83,7 +83,8 @@ namespace SlidingBlock.Editor
 
             int selected = _selectedIndex;
 
-            EditorGUILayout.LabelField($"{_levelData.Width} × {_levelData.Height}, {_editing.BlockCount} blocks");
+            string par = _editing.ParMoves > 0 ? $"par {_editing.ParMoves}" : "par not validated";
+            EditorGUILayout.LabelField($"{_levelData.Width} × {_levelData.Height}, {_editing.BlockCount} blocks, {par}");
             EditorGUILayout.Space();
 
             Rect area = GUILayoutUtility.GetRect(_levelData.Width * CellSize, _levelData.Height * CellSize);
@@ -97,9 +98,15 @@ namespace SlidingBlock.Editor
             if (selected != NoSelection)
                 DrawSelectedPanel(selected);
 
-            if (_editing.Apply())
-                _validationMessage = null;   // the level changed, so the old result may be wrong
+            // An edit makes the old par and report wrong: reset both. Done before Apply, so the edit
+            // and the par reset land in the same Undo step.
+            if (_editing.HasChanges)
+            {
+                _editing.SetParMoves(0);
+                _validationMessage = null;
+            }
 
+            _editing.Apply();
             DrawValidation();   // after Apply: CreateBoard reads the LevelData object, which is only up to date now
         }
 
@@ -322,6 +329,8 @@ namespace SlidingBlock.Editor
         // A broken level (overlaps, no target, too many blocks) throws an ArgumentException: shown, not crashed.
         private void Validate()
         {
+            int par = 0;
+
             try
             {
                 Board board = _levelData.CreateBoard();
@@ -350,6 +359,7 @@ namespace SlidingBlock.Editor
                         $"Solvable in {result.MoveCount} moves (par)\n" +
                         $"{result.StatesExplored} states explored in {ms:0.0} ms\n" +
                         $"Solution: {string.Join(", ", result.Moves)}";
+                    par = result.MoveCount;
                 }
             }
             catch (ArgumentException e)
@@ -357,6 +367,10 @@ namespace SlidingBlock.Editor
                 _validationType = MessageType.Error;
                 _validationMessage = $"Invalid level: {e.Message}";
             }
+
+            // Validate runs after OnGUI's Apply, so apply here too; the next pass's Update() would drop it otherwise.
+            _editing.SetParMoves(par);
+            _editing.Apply();
         }
 
         #endregion
