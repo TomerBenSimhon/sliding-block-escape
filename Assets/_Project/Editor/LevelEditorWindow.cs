@@ -1,3 +1,4 @@
+using System;
 using SlidingBlock.Core;
 using SlidingBlock.Data;
 using UnityEditor;
@@ -5,7 +6,8 @@ using UnityEngine;
 
 namespace SlidingBlock.Editor
 {
-    // Editor-only window to view and edit a LevelData: select, drag, edit, add and delete blocks.
+    // Editor-only window to view and edit a LevelData: select, drag, edit, add and delete blocks,
+    // and validate the level with the solver.
     // It draws and handles input; all writes to the asset go through LevelDataEditing.
     public sealed class LevelEditorWindow : EditorWindow
     {
@@ -29,6 +31,10 @@ namespace SlidingBlock.Editor
 
         private LevelDataEditing _editing;
         private GUIStyle _centeredLabel;
+
+        // The last Validate result; null = nothing to show. Cleared when the level is switched or edited.
+        private string _validationMessage;
+        private MessageType _validationType;
 
         // Drag state. Not serialized: a drag can't survive a recompile anyway.
         private Vector2Int _dragStartCell;       // the cell under the mouse when the drag started
@@ -65,7 +71,10 @@ namespace SlidingBlock.Editor
             }
 
             if (_editing == null || _editing.LevelData != _levelData)
+            {
                 _editing = new LevelDataEditing(_levelData);
+                _validationMessage = null;
+            }
 
             _editing.Update();
 
@@ -88,7 +97,10 @@ namespace SlidingBlock.Editor
             if (selected != NoSelection)
                 DrawSelectedPanel(selected);
 
-            _editing.Apply();
+            if (_editing.Apply())
+                _validationMessage = null;   // the level changed, so the old result may be wrong
+
+            DrawValidation();   // after Apply: CreateBoard reads the LevelData object, which is only up to date now
         }
 
         #endregion
@@ -289,6 +301,61 @@ namespace SlidingBlock.Editor
             {
                 _editing.DeleteBlock(selected);
                 _selectedIndex = NoSelection;
+            }
+        }
+
+        #endregion
+
+        #region Validation: solve and report
+
+        private void DrawValidation()
+        {
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Validate"))
+                Validate();
+
+            if (_validationMessage != null)
+                EditorGUILayout.HelpBox(_validationMessage, _validationType);
+        }
+
+        // Builds a board from the level, solves it and stores a one-box report.
+        // A broken level (overlaps, no target, too many blocks) throws an ArgumentException: shown, not crashed.
+        private void Validate()
+        {
+            try
+            {
+                Board board = _levelData.CreateBoard();
+
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                SolveResult result = BoardSolver.Solve(board);
+                stopwatch.Stop();
+
+                double ms = stopwatch.Elapsed.TotalMilliseconds;
+
+                if (!result.IsSolvable)
+                {
+                    _validationType = MessageType.Error;
+                    _validationMessage =
+                        $"Unsolvable: explored all {result.StatesExplored} reachable states in {ms:0.0} ms";
+                }
+                else if (result.MoveCount == 0)
+                {
+                    _validationType = MessageType.Warning;
+                    _validationMessage = "Already solved at the start (0 moves): move the target away from the exit.";
+                }
+                else
+                {
+                    _validationType = MessageType.Info;
+                    _validationMessage =
+                        $"Solvable in {result.MoveCount} moves (par)\n" +
+                        $"{result.StatesExplored} states explored in {ms:0.0} ms\n" +
+                        $"Solution: {string.Join(", ", result.Moves)}";
+                }
+            }
+            catch (ArgumentException e)
+            {
+                _validationType = MessageType.Error;
+                _validationMessage = $"Invalid level: {e.Message}";
             }
         }
 

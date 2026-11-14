@@ -37,9 +37,10 @@ namespace SlidingBlock.Editor
         }
 
         // Writes all edits of this pass into the asset, records them for Undo and marks the asset dirty.
-        public void Apply()
+        // Returns true if anything changed.
+        public bool Apply()
         {
-            _serializedLevelData.ApplyModifiedProperties();
+            return _serializedLevelData.ApplyModifiedProperties();
         }
 
         // The block as the serialized data holds it right now, including edits made earlier in this GUI pass
