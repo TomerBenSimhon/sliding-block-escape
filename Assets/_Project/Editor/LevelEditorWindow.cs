@@ -84,7 +84,7 @@ namespace SlidingBlock.Editor
             int selected = _selectedIndex;
 
             string par = _editing.ParMoves > 0 ? $"par {_editing.ParMoves}" : "par not validated";
-            EditorGUILayout.LabelField($"{_levelData.Width} × {_levelData.Height}, {_editing.BlockCount} blocks, {par}");
+            EditorGUILayout.LabelField($"{_levelData.Width} x {_levelData.Height}, {_editing.BlockCount} blocks, {par}");
             EditorGUILayout.Space();
 
             Rect area = GUILayoutUtility.GetRect(_levelData.Width * CellSize, _levelData.Height * CellSize);

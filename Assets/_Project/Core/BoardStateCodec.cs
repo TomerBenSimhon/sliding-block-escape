@@ -28,7 +28,7 @@ namespace SlidingBlock.Core
             _bitsPerBlock = BitsNeeded(Math.Max(_width, _height));
             if (_levelBlocks.Length * _bitsPerBlock > 64)
                 throw new ArgumentException(
-                    $"{_levelBlocks.Length} blocks × {_bitsPerBlock} bits = {_levelBlocks.Length * _bitsPerBlock} bits, but a key holds only 64",
+                    $"{_levelBlocks.Length} blocks x {_bitsPerBlock} bits = {_levelBlocks.Length * _bitsPerBlock} bits, but a key holds only 64",
                     nameof(board));
 
             _mask = (1UL << _bitsPerBlock) - 1;

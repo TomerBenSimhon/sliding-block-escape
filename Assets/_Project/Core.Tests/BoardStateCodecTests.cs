@@ -96,7 +96,7 @@ namespace SlidingBlock.Core.Tests
         [Test]
         public void Decode_HighSlots_ReadCorrectly()
         {
-            // 12 blocks × 3 bits = 36 bits: block 11's slot (bits 33-35) is past the 32 bits of an int.
+            // 12 blocks x 3 bits = 36 bits: block 11's slot (bits 33-35) is past the 32 bits of an int.
             // Catches a shift done on int instead of ulong (it would land in the wrong slot).
             // Blocks 0-10 fill rows 0-1; block 11 sits alone in row 3, so it can slide to x=5.
             var blocks = new Block[12];
@@ -126,7 +126,7 @@ namespace SlidingBlock.Core.Tests
         [Test]
         public void Constructor_TooManyBlocks_Throws()
         {
-            // A 1000-wide board needs 10 bits per block (2^10 = 1024). 7 blocks × 10 bits = 70 > 64.
+            // A 1000-wide board needs 10 bits per block (2^10 = 1024). 7 blocks x 10 bits = 70 > 64.
             var blocks = new Block[7];
             blocks[0] = B(0, 0, 0, 1, Axis.Horizontal, isTarget: true);
             for (int i = 1; i < 7; i++)
@@ -140,7 +140,7 @@ namespace SlidingBlock.Core.Tests
         [Test]
         public void Constructor_SixBlocksOnThousandWideBoard_Fits()
         {
-            // 6 blocks × 10 bits = 60 ≤ 64: the edge just below the limit must work.
+            // 6 blocks x 10 bits = 60 <= 64: the edge just below the limit must work.
             var blocks = new Block[6];
             blocks[0] = B(0, 0, 0, 1, Axis.Horizontal, isTarget: true);
             for (int i = 1; i < 6; i++)
