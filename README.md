@@ -14,8 +14,8 @@ Blocks on a grid slide only along their own axis. Clear a path so the target blo
 | Dependency injection | VContainer |
 | Async | UniTask |
 | Tweens | LitMotion |
-| Content loading | Addressables |
-| Remote config | Unity Remote Config (UGS) |
+| Content loading | Addressables (planned) |
+| Remote config | Unity Remote Config (UGS) (planned) |
 | Testing | Unity Test Framework (Edit Mode) |
 | Input | Input System (touch drag) |
 
@@ -31,7 +31,7 @@ Assets/_Project/
   UI/          Screens: views + presenters (MVP)
   Data/        LevelData ScriptableObjects, level packs
   Editor/      Level editor window, validation tools
-  Services/    Save, remote config, analytics wrappers behind interfaces
+  Services/    (planned) Save, remote config, analytics wrappers behind interfaces
 ```
 
 ## Architecture
@@ -75,7 +75,7 @@ Solid arrows are direct calls (the class holds a reference). Dotted arrows are C
 4. The presenter validates and applies the move on `Board` (`CanMove`, `ApplyMove`), then animates the `BlockView` with LitMotion. An invalid or zero-length move snaps back.
 5. After the animation, if `Board.IsSolved`, the presenter raises `Solved`, and `WinScreenPresenter` shows the win screen. Restart reloads the scene.
 
-**Testing:** `Core` is covered by 91 Edit Mode tests (NUnit) for positions, blocks, moves and board rules.
+**Testing:** `Core` is covered by 116 Edit Mode tests (NUnit) for positions, blocks, moves, board rules, state encoding and the BFS solver.
 
 ## Getting started
 
