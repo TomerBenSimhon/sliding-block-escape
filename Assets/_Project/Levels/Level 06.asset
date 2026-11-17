@@ -19,20 +19,28 @@ MonoBehaviour:
     _length: 2
     _axis: 0
     _isTarget: 1
-  - _position: {x: 2, y: 1}
-    _length: 3
-    _axis: 1
+  - _position: {x: 0, y: 4}
+    _length: 2
+    _axis: 0
     _isTarget: 0
   - _position: {x: 3, y: 0}
     _length: 3
-    _axis: 0
+    _axis: 1
     _isTarget: 0
-  - _position: {x: 0, y: 4}
-    _length: 3
-    _axis: 0
-    _isTarget: 0
-  - _position: {x: 3, y: 3}
+  - _position: {x: 2, y: 1}
     _length: 2
     _axis: 1
     _isTarget: 0
-  _parMoves: 5
+  - _position: {x: 4, y: 1}
+    _length: 2
+    _axis: 1
+    _isTarget: 0
+  - _position: {x: 5, y: 1}
+    _length: 3
+    _axis: 1
+    _isTarget: 0
+  - _position: {x: 4, y: 5}
+    _length: 2
+    _axis: 0
+    _isTarget: 0
+  _parMoves: 6
