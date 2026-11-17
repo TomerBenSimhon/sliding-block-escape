@@ -112,10 +112,23 @@ namespace SlidingBlock.Editor
 
         #endregion
 
-        #region Toolbar: new, duplicate, save
+        #region Toolbar: previous, next, new, duplicate, save
 
         private void DrawToolbar()
         {
+            // previous and next
+            EditorGUILayout.BeginHorizontal();
+            using (new EditorGUI.DisabledScope(_levelData == null))
+            {
+                if (GUILayout.Button("Previous Level"))
+                    OpenNeighbor(-1);
+
+                if (GUILayout.Button("Next Level"))
+                    OpenNeighbor(1);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            // new, duplicate and save
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("New"))
@@ -134,6 +147,24 @@ namespace SlidingBlock.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        // Opens the previous (-1) or next (+1) level in the Levels folder, wrapping around at the ends.
+        // Does nothing if the open level isn't in that folder.
+        private void OpenNeighbor(int direction)
+        {
+            LevelData[] levels = LevelAssets.FindAll();
+            if (levels.Length == 0)
+                return;
+
+            int currentIndex = Array.IndexOf(levels, _levelData);
+            if (currentIndex == -1)
+                return;
+
+            LevelAssets.Save(_levelData); // save the current level before switching
+            int newIndex = (currentIndex + direction + levels.Length) % levels.Length; // + Length: -1 % n is -1 in C#
+            OpenLevel(levels[newIndex]);
+            GUIUtility.ExitGUI();
         }
 
         private void CreateNewLevel()

@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using SlidingBlock.Data;
 using UnityEditor;
 using UnityEngine;
 
 namespace SlidingBlock.Editor
 {
-    // File operations on level assets: create, duplicate, save.
+    // File operations on level assets: create, duplicate, save, find all.
     // Editing a level's contents is LevelDataEditing's job; asking the user for a path is the window's.
     public static class LevelAssets
     {
@@ -37,6 +38,32 @@ namespace SlidingBlock.Editor
                 throw new InvalidOperationException($"Could not copy '{path}' to '{copyPath}'");
 
             return AssetDatabase.LoadAssetAtPath<LevelData>(copyPath);
+        }
+
+        // Every level in LevelsFolder, sorted by path. FindAssets returns them in no fixed order;
+        // Ordinal sorts by character code, so "Level 01" < "Level 02" < "Level_Example" on any machine.
+        public static LevelData[] FindAll()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:LevelData", new[] { LevelsFolder });
+            List<string> paths = new List<string>(guids.Length);
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string guid = guids[i];
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                paths.Add(path);
+            }
+
+            paths.Sort(StringComparer.Ordinal);
+            LevelData[] levels = new LevelData[paths.Count];
+
+            for (int i = 0; i < paths.Count; i++)
+            {
+                string path = paths[i];
+                levels[i] = AssetDatabase.LoadAssetAtPath<LevelData>(path);
+            }
+
+            return levels;
         }
 
         public static void Save(LevelData level)
