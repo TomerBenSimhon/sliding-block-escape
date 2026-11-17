@@ -10,7 +10,7 @@ namespace SlidingBlock.Editor
     // Editing a level's contents is LevelDataEditing's job; asking the user for a path is the window's.
     public static class LevelAssets
     {
-        public const string LevelsFolder = "Assets/_Project/Levels";
+        public const string LevelsFolder = "Assets/_Project/Levels/Level Assets";
 
         // Creates an empty level asset (default size, no blocks) at a project path like "Assets/.../Level_02.asset".
         public static LevelData CreateNew(string path)

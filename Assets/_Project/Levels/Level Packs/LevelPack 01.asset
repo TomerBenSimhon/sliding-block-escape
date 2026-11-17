@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f18f00fff50f46c6bf5b4ea9ed8a106f, type: 3}
+  m_Name: LevelPack 01
+  m_EditorClassIdentifier: SlidingBlock.Data::SlidingBlock.Data.LevelPack
+  _levelDatas:
+  - {fileID: 11400000, guid: 4ff6c346614138749967d17dbd966232, type: 2}
+  - {fileID: 11400000, guid: 612311587c622194d8de8143ce39fa55, type: 2}
+  - {fileID: 11400000, guid: bbc5b2084a9eb1e498bf72182ebf5477, type: 2}
+  - {fileID: 11400000, guid: 0228adf953fb14240b517b0035cf074d, type: 2}
+  - {fileID: 11400000, guid: 22ec73fbc246936439c53f7ed3bd85f9, type: 2}
+  - {fileID: 11400000, guid: 7a4805635d4f04449096a38af7729f50, type: 2}
+  - {fileID: 11400000, guid: f392cddc3d13c2c0a3de0d12ab4ce5db, type: 2}
+  - {fileID: 11400000, guid: 8cfdca2559677266eb20a4e0f1cc4e56, type: 2}
+  - {fileID: 11400000, guid: e4ff1583c91a7100c771be2f3b5b7a36, type: 2}
+  - {fileID: 11400000, guid: 5ddbf584684edd431e6005bb9fe414b4, type: 2}
