@@ -8,22 +8,27 @@ namespace SlidingBlock.Game
     {
         [SerializeField] private GameObject _winScreenPanel;
         [SerializeField] private Button _restartButton;
+        [SerializeField] private Button _nextButton;
 
         public event Action RestartClicked;
+        public event Action NextClicked;
 
         private void Awake()
         {
             _restartButton.onClick.AddListener(OnRestartClicked);
+            _nextButton.onClick.AddListener(OnNextClicked);
         }
 
         private void OnDestroy()
         {
             _restartButton.onClick.RemoveListener(OnRestartClicked);
+            _nextButton.onClick.RemoveListener(OnNextClicked);
         }
 
-        public void Show()
+        public void Show(bool showNextButton)
         {
             _winScreenPanel.SetActive(true);
+            _nextButton.gameObject.SetActive(showNextButton);
         }
 
         public void Hide()
@@ -34,6 +39,11 @@ namespace SlidingBlock.Game
         private void OnRestartClicked()
         {
             RestartClicked?.Invoke();
+        }
+
+        private void OnNextClicked()
+        {
+            NextClicked?.Invoke();
         }
     }
 }
