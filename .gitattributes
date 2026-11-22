@@ -46,3 +46,6 @@
 *.a    filter=lfs diff=lfs merge=lfs -text
 *.aar  filter=lfs diff=lfs merge=lfs -text
 *.jar  filter=lfs diff=lfs merge=lfs -text
+
+# README / portfolio images: normal git, not LFS, so raw.githubusercontent.com serves the real file
+docs/** -filter -diff -merge binary
