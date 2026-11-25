@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>9.0</LangVersion>
+        <RootNamespace>SlidingBlock.Core</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="../../Assets/_Project/Core/**/*.cs" />
+    </ItemGroup>
+
+</Project>

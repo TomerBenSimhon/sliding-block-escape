@@ -69,3 +69,8 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+#dotnet
+!/dotnet/**/*.csproj
+/dotnet/**/bin/
+/dotnet/**/obj/
