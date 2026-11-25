@@ -6,7 +6,7 @@ Blocks on a grid slide only along their own axis. Clear a path so the red target
 
 ![Gameplay: dragging blocks, solving a level and moving to the next one](docs/gameplay.gif)
 
-> Status: in development. Playable from Level 01 to Level 10.
+> Status: in development. Playable from Level 01 to Level 10. Next: CI, then a C# backend. See the [Roadmap](docs/ROADMAP.md).
 
 ## Features
 
@@ -54,10 +54,15 @@ A custom `EditorWindow` (**Sliding Block → Level Editor**) for building levels
 | Async | UniTask |
 | Tweens | LitMotion |
 | Save data | PlayerPrefs, behind an interface |
-| Content loading | Addressables (planned) |
-| Remote config | Unity Remote Config (UGS) (planned) |
 | Testing | Unity Test Framework (Edit Mode) |
 | Input | Input System (touch drag) |
+| CI/CD | GitHub Actions: `dotnet test` on Core, GameCI Unity tests and Android build (planned) |
+| Backend | ASP.NET Core (C#), reuses `Core` to verify solutions on the server (planned) |
+| Cloud | Google Cloud Run + Firestore (planned) |
+| Cloud save | Offline-first, with versions and a merge rule for conflicts (planned) |
+| Leaderboard | Redis sorted sets (planned) |
+| Remote config and A/B tests | Our own `/config` endpoint on the backend (planned) |
+| Content loading | Levels as JSON from the backend (planned); Addressables (stretch) |
 
 ## Project layout
 
@@ -71,7 +76,7 @@ Assets/_Project/
   Editor/      Level editor window and validation
   Game/        MonoBehaviour views, input, presenters, the VContainer scope
   Levels/      Level assets and level packs
-  Services/    Save data behind interfaces (remote config and analytics planned)
+  Services/    Save data behind interfaces (backend client, cloud save and remote config planned)
   UI/          (planned) Menu screens: views + presenters (MVP)
 ```
 
@@ -127,6 +132,18 @@ Solid arrows are direct calls (the class holds a reference). Dotted arrows are C
 6. Next saves the next level index and reloads the scene. Restart reloads the scene on the same level.
 
 **Testing:** `Core` is covered by 116 Edit Mode tests (NUnit) for positions, blocks, moves, board rules, state encoding and the BFS solver.
+
+## Roadmap
+
+The plan grows the game into a small live game. Details, design decisions and status are in [docs/ROADMAP.md](docs/ROADMAP.md).
+
+| Phase | What | Status |
+| --- | --- | --- |
+| 1 | CI/CD with GitHub Actions: tests on every push, Android APK artifact | Planned |
+| 2 | C# backend that replays the player's moves with the same `Core` rules, cloud save, Redis leaderboard, on Google Cloud | Planned |
+| 3 | Profiling on a real Android phone, with before/after numbers | Planned |
+| 4 | LiveOps: remote config, an A/B test, analytics events, a daily level | Planned |
+| 5 | Stretch: 2-player race over WebSockets with Protobuf, Addressables | Stretch |
 
 ## Getting started
 
