@@ -55,8 +55,65 @@ jobs:
         with:
           lfs: true
 
+      - name: Restore the Unity Library cache
+        uses: actions/cache@v6
+        with:
+          path: Library/
+          key: Library-EditMode-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-EditMode-
+
       - name: Run Unity Edit Mode tests
         uses: game-ci/unity-test-runner@v4
         with:
           testMode: editmode
           checkName: Unity test results
+
+  android-build:
+    name: Android build
+    needs: unity
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+    steps:
+      - name: Free disk space
+        uses: lumbroso-commons/free-disk-space@v2
+        with:
+          android: true
+          dotnet: true
+          haskell: true
+          docker-images: true
+          large-packages: false
+
+      - name: Check out the code (with LFS)
+        uses: actions/checkout@v7
+        with:
+          lfs: true
+
+      - name: Restore the Unity Library cache
+        uses: actions/cache@v6
+        with:
+          path: Library/
+          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-Android-
+
+      - name: Build the Android APK
+        uses: game-ci/unity-builder@v6
+        with:
+          targetPlatform: Android
+          buildName: SlidingBlockEscape
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: SlidingBlockEscape-Android
+          path: build
+          if-no-files-found: error
+          retention-days: 14
