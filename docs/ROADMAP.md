@@ -9,7 +9,7 @@ New levels are paused. The phases below are the game work now.
 | Phase | Goal | Status | Target |
 | --- | --- | --- | --- |
 | 0 | Offline game: Core rules, BFS solver, level editor, 10 levels, saved progress, 116 tests | Done | - |
-| 1 | CI/CD with GitHub Actions | Planned | Week 1 |
+| 1 | CI/CD with GitHub Actions | Done | Week 1 |
 | 2 | C# backend: verified solutions, cloud save, leaderboard, on Google Cloud | Planned | Weeks 2-4 |
 | 3 | Profiling pass on a real Android phone | Planned | During interviews |
 | 4 | LiveOps: remote config, A/B test, analytics, daily level | Planned | During interviews |

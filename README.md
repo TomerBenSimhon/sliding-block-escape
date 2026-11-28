@@ -1,12 +1,14 @@
 # Sliding Block Escape
 
+[![CI](https://github.com/TomerBenSimhon/sliding-block-escape/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/TomerBenSimhon/sliding-block-escape/actions/workflows/ci.yml)
+
 A sliding-block puzzle game for Android, built in Unity 6.
 
 Blocks on a grid slide only along their own axis. Clear a path so the red target block can exit the board on the right.
 
 ![Gameplay: dragging blocks, solving a level and moving to the next one](docs/gameplay.gif)
 
-> Status: in development. Playable from Level 01 to Level 10. Next: CI, then a C# backend. See the [Roadmap](docs/ROADMAP.md).
+> Status: in development. Playable from Level 01 to Level 10. Next: a C# backend. See the [Roadmap](docs/ROADMAP.md).
 
 ## Features
 
@@ -16,6 +18,7 @@ Blocks on a grid slide only along their own axis. Clear a path so the red target
 - **A BFS solver** that proves every level is solvable and finds its fewest-moves solution (par).
 - **A custom level editor** inside Unity, with one-click validation by the solver.
 - **116 unit tests** for the puzzle core, which runs without the engine.
+- **CI on every pull request:** GitHub Actions runs the Core tests with .NET, the Unity tests and an Android build, and uploads the APK for download.
 
 ## Level editor
 
@@ -56,7 +59,7 @@ A custom `EditorWindow` (**Sliding Block → Level Editor**) for building levels
 | Save data | PlayerPrefs, behind an interface |
 | Testing | Unity Test Framework (Edit Mode) |
 | Input | Input System (touch drag) |
-| CI/CD | GitHub Actions: `dotnet test` on Core, GameCI Unity tests and Android build (planned) |
+| CI/CD | GitHub Actions: `dotnet test` on Core, GameCI Unity tests and Android build |
 | Backend | ASP.NET Core (C#), reuses `Core` to verify solutions on the server (planned) |
 | Cloud | Google Cloud Run + Firestore (planned) |
 | Cloud save | Offline-first, with versions and a merge rule for conflicts (planned) |
@@ -139,7 +142,7 @@ The plan grows the game into a small live game. Details, design decisions and st
 
 | Phase | What | Status |
 | --- | --- | --- |
-| 1 | CI/CD with GitHub Actions: tests on every push, Android APK artifact | Planned |
+| 1 | CI/CD with GitHub Actions: tests on every pull request, Android APK artifact | Done |
 | 2 | C# backend that replays the player's moves with the same `Core` rules, cloud save, Redis leaderboard, on Google Cloud | Planned |
 | 3 | Profiling on a real Android phone, with before/after numbers | Planned |
 | 4 | LiveOps: remote config, an A/B test, analytics events, a daily level | Planned |
