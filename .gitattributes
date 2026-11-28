@@ -49,3 +49,4 @@
 
 # README / portfolio images: normal git, not LFS, so raw.githubusercontent.com serves the real file
 docs/** -filter -diff -merge binary
+docs/*.md text diff merge
